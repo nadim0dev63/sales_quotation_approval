@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_mrp_bom_form_inherit_sqa" model="ir.ui.view">
+        <field name="name">mrp.bom.form.inherit.sqa</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add Cost Price and Sales Price columns to BOM component lines -->
+            <xpath expr="//field[@name='bom_line_ids']//list//field[@name='product_qty']" position="after">
+                <field name="sqa_cost_price" string="Cost Price" readonly="1" optional="show"/>
+                <field name="sqa_sales_price" string="Sales Price" readonly="1" optional="show"/>
+            </xpath>
+            <!-- Add totals below BOM lines -->
+            <xpath expr="//field[@name='bom_line_ids']" position="after">
+                <group class="oe_subtotal_footer" invisible="not bom_line_ids">
+                    <field name="sqa_total_cost" string="Total Cost Price" readonly="1"/>
+                    <field name="sqa_total_sales" string="Total Sales Price" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

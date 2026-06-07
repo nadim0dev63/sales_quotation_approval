@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sqa_stage1,sqa.stage1 all,model_sqa_stage1,,1,1,1,1
+access_sqa_stage1_line,sqa.stage1.line all,model_sqa_stage1_line,,1,1,1,1
+access_sqa_stage1_bom,sqa.stage1.bom all,model_sqa_stage1_bom,,1,1,1,1
+access_sqa_stage1_bom_line,sqa.stage1.bom.line all,model_sqa_stage1_bom_line,,1,1,1,1
+access_sqa_stage2,sqa.stage2 all,model_sqa_stage2,,1,1,1,1
+access_sqa_stage2_line,sqa.stage2.line all,model_sqa_stage2_line,,1,1,1,1
+access_sqa_stage2_bom,sqa.stage2.bom all,model_sqa_stage2_bom,,1,1,1,1
+access_sqa_stage2_bom_line,sqa.stage2.bom.line all,model_sqa_stage2_bom_line,,1,1,1,1
+access_sqa_stage3,sqa.stage3 all,model_sqa_stage3,,1,1,1,1
+access_sqa_stage3_line,sqa.stage3.line all,model_sqa_stage3_line,,1,1,1,1
+access_sqa_stage3_bom,sqa.stage3.bom all,model_sqa_stage3_bom,,1,1,1,1
+access_sqa_stage3_bom_line,sqa.stage3.bom.line all,model_sqa_stage3_bom_line,,1,1,1,1
+access_sqa_finalstage,sqa.finalstage all,model_sqa_finalstage,,1,1,1,1

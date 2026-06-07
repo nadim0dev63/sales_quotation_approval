@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_sqa_root" 
+              name="Sales Quotation Approval" 
+              sequence="10"/>
+
+    <menuitem id="menu_sqa_stage1" 
+              name="First Stage" 
+              parent="menu_sqa_root" 
+              action="action_sqa_stage1" 
+              sequence="10"/>
+              
+    <menuitem id="menu_sqa_stage2" 
+              name="Second Stage" 
+              parent="menu_sqa_root" 
+              action="action_sqa_stage2" 
+              sequence="20"/>
+              
+    <menuitem id="menu_sqa_stage3" 
+              name="Third Stage" 
+              parent="menu_sqa_root" 
+              action="action_sqa_stage3" 
+              sequence="30"/>
+              
+    <menuitem id="menu_sqa_finalstage" 
+              name="Final Stage" 
+              parent="menu_sqa_root" 
+              action="action_sqa_finalstage" 
+              sequence="40"/>
+</odoo>

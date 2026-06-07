@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Stage 1 Report Template -->
+    <template id="report_sqa_stage1">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Stage 1 - Initial Costing</h2>
+                        <div class="row mt32">
+                            <div class="col-6">
+                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
+                                <strong>Pre-Order Ref:</strong> <t t-out="doc.pre_order_ref"/><br/>
+                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
+                                <strong>Status:</strong> <t t-out="doc.state"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Grand Total Cost:</strong> <t t-out="doc.grand_total_cost"/><br/>
+                                <strong>Grand Total Sales:</strong> <t t-out="doc.grand_total_sales"/><br/>
+                                <strong>Expected Profit:</strong> <t t-out="doc.grand_total_sales - doc.grand_total_cost"/>
+                            </div>
+                        </div>
+                        <h4>BOM Lines</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Total Cost</th>
+                                    <th>Total Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.sqa_stage1_line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-out="line.bom_id.product_id.name"/></td>
+                                        <td><t t-out="line.product_qty"/></td>
+                                        <td><t t-out="line.total_cost"/></td>
+                                        <td><t t-out="line.total_sales"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <div class="footer mt32">
+                            <small>Generated on <t t-out="format_date(datetime.datetime.now())"/></small>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Stage 2 Report Template -->
+    <template id="report_sqa_stage2">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Stage 2 - Partial Review</h2>
+                        <div class="row mt32">
+                            <div class="col-6">
+                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
+                                <strong>Pre-Order Ref:</strong> <t t-out="doc.pre_order_ref"/><br/>
+                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
+                                <strong>Stage 1 Ref:</strong> <t t-out="doc.stage1_id.name"/><br/>
+                                <strong>Status:</strong> <t t-out="doc.state"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Grand Total Cost:</strong> <t t-out="doc.grand_total_cost"/><br/>
+                                <strong>Grand Total Sales:</strong> <t t-out="doc.grand_total_sales"/><br/>
+                                <strong>Expected Profit:</strong> <t t-out="doc.grand_total_sales - doc.grand_total_cost"/>
+                            </div>
+                        </div>
+                        <h4>BOM Lines</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Total Cost</th>
+                                    <th>Total Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.sqa_stage2_line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-out="line.bom_id.product_id.name"/></td>
+                                        <td><t t-out="line.product_qty"/></td>
+                                        <td><t t-out="line.total_cost"/></td>
+                                        <td><t t-out="line.total_sales"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Stage 3 Report Template -->
+    <template id="report_sqa_stage3">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Stage 3 - Final Costing</h2>
+                        <div class="row mt32">
+                            <div class="col-6">
+                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
+                                <strong>Pre-Order Ref:</strong> <t t-out="doc.pre_order_ref"/><br/>
+                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
+                                <strong>Stage 1 Ref:</strong> <t t-out="doc.stage1_id.name"/><br/>
+                                <strong>Stage 2 Ref:</strong> <t t-out="doc.stage2_id.name"/><br/>
+                                <strong>Status:</strong> <t t-out="doc.state"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Grand Total Cost:</strong> <t t-out="doc.grand_total_cost"/><br/>
+                                <strong>Grand Total Sales:</strong> <t t-out="doc.grand_total_sales"/><br/>
+                                <strong>Expected Profit:</strong> <t t-out="doc.grand_total_sales - doc.grand_total_cost"/>
+                            </div>
+                        </div>
+                        <h4>BOM Lines</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Total Cost</th>
+                                    <th>Total Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.sqa_stage3_line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-out="line.bom_id.product_id.name"/></td>
+                                        <td><t t-out="line.product_qty"/></td>
+                                        <td><t t-out="line.total_cost"/></td>
+                                        <td><t t-out="line.total_sales"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Final Stage Report Template -->
+    <template id="report_sqa_finalstage">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Final Stage - Management Approval</h2>
+                        <div class="row mt32">
+                            <div class="col-12">
+                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
+                                <strong>Pre-Order Reference:</strong> <t t-out="doc.pre_order_ref_id.name"/><br/>
+                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
+                                <strong>Approved Stage:</strong> 
+                                <t t-if="doc.quotation_approval == 'stage1'">Stage 1 - Initial Costing</t>
+                                <t t-elif="doc.quotation_approval == 'stage2'">Stage 2 - Partial Review</t>
+                                <t t-elif="doc.quotation_approval == 'stage3'">Stage 3 - Final Costing</t>
+                                <br/>
+                                <strong>Status:</strong> <t t-out="doc.state"/>
+                            </div>
+                        </div>
+
+                        <h4>Stage Comparison</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Grand Total Cost</th>
+                                    <th>Grand Total Sales</th>
+                                    <th>Expected Profit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-attf-class="text-success #{'fw-bold' if doc.quotation_approval == 'stage1' else ''}">
+                                    <td>Stage 1 - Initial Costing</td>
+                                    <td><t t-out="doc.stage1_grand_cost"/></td>
+                                    <td><t t-out="doc.stage1_grand_sales"/></td>
+                                    <td><t t-out="doc.stage1_expected_profit"/></td>
+                                </tr>
+                                <tr t-attf-class="text-success #{'fw-bold' if doc.quotation_approval == 'stage2' else ''}">
+                                    <td>Stage 2 - Partial Review</td>
+                                    <td><t t-out="doc.stage2_grand_cost"/></td>
+                                    <td><t t-out="doc.stage2_grand_sales"/></td>
+                                    <td><t t-out="doc.stage2_expected_profit"/></td>
+                                </tr>
+                                <tr t-attf-class="text-success #{'fw-bold' if doc.quotation_approval == 'stage3' else ''}">
+                                    <td>Stage 3 - Final Costing</td>
+                                    <td><t t-out="doc.stage3_grand_cost"/></td>
+                                    <td><t t-out="doc.stage3_grand_sales"/></td>
+                                    <td><t t-out="doc.stage3_expected_profit"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div t-if="doc.sale_order_id" class="mt32">
+                            <h4>Sales Quotation</h4>
+                            <p><strong>Reference:</strong> <t t-out="doc.sale_order_id.name"/></p>
+                        </div>
+
+                        <div class="footer mt32">
+                            <hr/>
+                            <p>Management Signature: ________________________</p>
+                            <p>Date: <t t-out="format_date(datetime.datetime.now())"/></p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

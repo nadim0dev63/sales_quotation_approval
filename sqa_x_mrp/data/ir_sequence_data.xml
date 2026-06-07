@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Pre-Order Sequence -->
+        <record id="seq_sqa_pre_order" model="ir.sequence">
+            <field name="name">SQA Pre-Order Reference</field>
+            <field name="code">sqa.pre.order</field>
+            <field name="prefix">SQA</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Stage 1 Sequence -->
+        <record id="seq_sqa_stage1" model="ir.sequence">
+            <field name="name">SQA Stage 1 Reference</field>
+            <field name="code">sqa.stage1</field>
+            <field name="prefix">S1-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Stage 2 Sequence -->
+        <record id="seq_sqa_stage2" model="ir.sequence">
+            <field name="name">SQA Stage 2 Reference</field>
+            <field name="code">sqa.stage2</field>
+            <field name="prefix">S2-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Stage 3 Sequence -->
+        <record id="seq_sqa_stage3" model="ir.sequence">
+            <field name="name">SQA Stage 3 Reference</field>
+            <field name="code">sqa.stage3</field>
+            <field name="prefix">S3-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Final Stage Sequence -->
+        <record id="seq_sqa_finalstage" model="ir.sequence">
+            <field name="name">SQA Final Stage Reference</field>
+            <field name="code">sqa.finalstage</field>
+            <field name="prefix">SQA-FINAL-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

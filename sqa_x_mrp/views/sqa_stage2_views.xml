@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- sqa.stage2.bom — Wizard form -->
+    <record id="view_sqa_stage2_bom_form" model="ir.ui.view">
+        <field name="name">sqa.stage2.bom.form</field>
+        <field name="model">sqa.stage2.bom</field>
+        <field name="arch" type="xml">
+            <form string="BOM Detail - Stage 2">
+                <sheet>
+                    <group>
+                        <group string="Finish Product">
+                            <field name="bom_id" string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
+                        </group>
+                    </group>
+                    <separator string="Component Lines"/>
+                    <field name="bom_line_ids" nolabel="1">
+                        <list editable="bottom">
+                            <field name="product_id" string="Component" options="{'no_create': True}"/>
+                            <field name="product_qty" string="Quantity"/>
+                            <field name="cost_price"  string="Cost Price"/>
+                            <field name="sales_price" string="Sales Price"/>
+                            <field name="mrp_bom_line_id" invisible="1"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_save_and_close" string="Save &amp; Close"
+                            type="object" class="btn-primary"/>
+                    <button string="Discard" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- sqa.stage2.line — form (opened by open_form_view) -->
+    <record id="view_sqa_stage2_line_form" model="ir.ui.view">
+        <field name="name">sqa.stage2.line.form</field>
+        <field name="model">sqa.stage2.line</field>
+        <field name="arch" type="xml">
+            <form string="BOM Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="bom_id" string="BOM / Product" options="{'no_create': True}"/>
+                            <field name="product_qty" string="Quantity"/>
+                        </group>
+                        <group>
+                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="o_row mt8">
+                        <button name="action_open_bom_wizard"
+                                string="Open / Edit Component Lines"
+                                type="object"
+                                class="btn-primary"
+                                invisible="not bom_id"/>
+                    </div>
+                    <field name="sqa_stage2_bom_id" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- sqa.stage2 — list -->
+    <record id="view_sqa_stage2_list" model="ir.ui.view">
+        <field name="name">sqa.stage2.list</field>
+        <field name="model">sqa.stage2</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'checked'">
+                <field name="name"/>
+                <field name="pre_order_ref"/>
+                <field name="partner_id"/>
+                <field name="grand_total_cost"  sum="Grand Total Cost"/>
+                <field name="grand_total_sales" sum="Grand Total Sales"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'checked'"
+                       decoration-muted="state == 'draft'"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- sqa.stage2 — form -->
+    <record id="view_sqa_stage2_form" model="ir.ui.view">
+        <field name="name">sqa.stage2.form</field>
+        <field name="model">sqa.stage2</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_check"
+                            string="Check"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state == 'checked'"
+                            confirm="Mark Stage 2 as checked and promote to Stage 3?"/>
+                    <button name="action_view_stage3"
+                            string="Go to Stage 3 &#8594;"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'checked'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,checked"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="pre_order_ref" readonly="1"/>
+                            <field name="partner_id"    readonly="1"/>
+                            <field name="stage1_id"     readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="grand_total_cost"  readonly="1"/>
+                            <field name="grand_total_sales" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="BOM Lines">
+                            <field name="sqa_stage2_line_ids" open_form_view="True">
+                                <list editable="bottom">
+                                    <field name="bom_id" string="BOM / Product" options="{'no_create': True}"/>
+                                    <field name="product_qty" string="Quantity"/>
+                                    <field name="total_cost"  string="Total Cost Price"  readonly="1" sum="Grand Total Cost"/>
+                                    <field name="total_sales" string="Total Sales Price" readonly="1" sum="Grand Total Sales"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_sqa_stage2" model="ir.actions.act_window">
+        <field name="name">Second Stage</field>
+        <field name="res_model">sqa.stage2</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
