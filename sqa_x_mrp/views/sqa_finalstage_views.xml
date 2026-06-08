@@ -1,6 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Action -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Read-only BOM popup views (for Final Stage "View" buttons)
+    ═══════════════════════════════════════════════════════════════════════ -->
+
+    <record id="view_sqa_stage1_bom_form_readonly" model="ir.ui.view">
+        <field name="name">sqa.stage1.bom.form.readonly</field>
+        <field name="model">sqa.stage1.bom</field>
+        <field name="arch" type="xml">
+            <form string="BOM Detail (View Only)">
+                <sheet>
+                    <group>
+                        <group string="Finish Product">
+                            <field name="bom_id"      string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity"      readonly="1"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
+                        </group>
+                    </group>
+                    <separator string="Component Lines"/>
+                    <field name="bom_line_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="product_id"  string="Component"/>
+                            <field name="product_qty" string="Quantity"/>
+                            <field name="cost_price"  string="Cost Price"/>
+                            <field name="sales_price" string="Sales Price"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sqa_stage2_bom_form_readonly" model="ir.ui.view">
+        <field name="name">sqa.stage2.bom.form.readonly</field>
+        <field name="model">sqa.stage2.bom</field>
+        <field name="arch" type="xml">
+            <form string="BOM Detail (View Only)">
+                <sheet>
+                    <group>
+                        <group string="Finish Product">
+                            <field name="bom_id"      string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity"      readonly="1"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
+                        </group>
+                    </group>
+                    <separator string="Component Lines"/>
+                    <field name="bom_line_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="product_id"  string="Component"/>
+                            <field name="product_qty" string="Quantity"/>
+                            <field name="cost_price"  string="Cost Price"/>
+                            <field name="sales_price" string="Sales Price"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sqa_stage3_bom_form_readonly" model="ir.ui.view">
+        <field name="name">sqa.stage3.bom.form.readonly</field>
+        <field name="model">sqa.stage3.bom</field>
+        <field name="arch" type="xml">
+            <form string="BOM Detail (View Only)">
+                <sheet>
+                    <group>
+                        <group string="Finish Product">
+                            <field name="bom_id"      string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity"      readonly="1"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
+                        </group>
+                    </group>
+                    <separator string="Component Lines"/>
+                    <field name="bom_line_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="product_id"  string="Component"/>
+                            <field name="product_qty" string="Quantity"/>
+                            <field name="cost_price"  string="Cost Price"/>
+                            <field name="sales_price" string="Sales Price"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Final Stage — Action
+    ═══════════════════════════════════════════════════════════════════════ -->
     <record id="action_sqa_finalstage" model="ir.actions.act_window">
         <field name="name">Final Stage</field>
         <field name="res_model">sqa.finalstage</field>
@@ -9,80 +115,153 @@
             <p class="o_view_nocontent_smiling_face">
                 Review all three stages and approve the best quotation.
             </p>
-            <p>
-                Select a Pre-Order Reference to load all three stage totals.
-                Compare expected profits, select the best stage, and click Approve.
-            </p>
         </field>
     </record>
 
-    <!-- List View -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Final Stage — List View
+    ═══════════════════════════════════════════════════════════════════════ -->
     <record id="view_sqa_finalstage_list" model="ir.ui.view">
         <field name="name">sqa.finalstage.list</field>
         <field name="model">sqa.finalstage</field>
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="pre_order_ref_id"/>
+                <field name="pre_order_ref"/>
                 <field name="partner_id"/>
                 <field name="quotation_approval"/>
-                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-muted="state == 'draft'"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-muted="state == 'draft'"/>
                 <field name="create_date"/>
             </list>
         </field>
     </record>
 
-    <!-- Form View -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Final Stage — Form View
+    ═══════════════════════════════════════════════════════════════════════ -->
     <record id="view_sqa_finalstage_form" model="ir.ui.view">
         <field name="name">sqa.finalstage.form</field>
         <field name="model">sqa.finalstage</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_approve" string="Approve" type="object" class="btn-primary" invisible="state == 'approved'"/>
-                    <field name="state" widget="badge"/>
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state == 'approved'"
+                            confirm="Approve and create Sales Quotation?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,approved"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1>
-                            <field name="name" readonly="1"/>
-                        </h1>
+                        <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
                         <group>
-                            <field name="pre_order_ref_id" required="1"/>
+                            <!-- Selector field (Many2one) — editable until approved -->
+                            <field name="pre_order_ref_id"
+                                   options="{'no_create': True}"
+                                   readonly="state == 'approved'"/>
+                            <!-- Human-readable pre-order ref string (e.g. SQA00001) -->
+                            <field name="pre_order_ref" readonly="1"
+                                   invisible="not pre_order_ref"/>
                             <field name="partner_id" readonly="1"/>
                         </group>
                         <group>
-                            <field name="quotation_approval" required="1" invisible="state == 'approved'"/>
+                            <field name="quotation_approval"
+                                   readonly="state == 'approved'"/>
+                            <field name="sale_order_id" readonly="1"
+                                   invisible="not sale_order_id"/>
                         </group>
                     </group>
 
-                    <!-- Stage Comparison Groups -->
-                    <group string="Stage Comparison">
-                        <group string="Stage 1 - Initial Costing">
-                            <field name="stage1_grand_cost" string="Grand Total Cost"/>
-                            <field name="stage1_grand_sales" string="Grand Total Sales"/>
-                            <field name="stage1_expected_profit" string="Expected Profit" widget="monetary" decoration-danger="stage1_expected_profit &lt; 0" decoration-success="stage1_expected_profit &gt; 0"/>
-                        </group>
-                        <group string="Stage 2 - Partial Review">
-                            <field name="stage2_grand_cost" string="Grand Total Cost"/>
-                            <field name="stage2_grand_sales" string="Grand Total Sales"/>
-                            <field name="stage2_expected_profit" string="Expected Profit" widget="monetary" decoration-danger="stage2_expected_profit &lt; 0" decoration-success="stage2_expected_profit &gt; 0"/>
-                        </group>
-                        <group string="Stage 3 - Final Costing">
-                            <field name="stage3_grand_cost" string="Grand Total Cost"/>
-                            <field name="stage3_grand_sales" string="Grand Total Sales"/>
-                            <field name="stage3_expected_profit" string="Expected Profit" widget="monetary" decoration-danger="stage3_expected_profit &lt; 0" decoration-success="stage3_expected_profit &gt; 0"/>
-                        </group>
-                    </group>
+                    <notebook>
+                        <!-- ─── S1 - BOM Lines ────────────────────────── -->
+                        <page string="S1 - BOM Lines">
+                            <field name="stage1_line_ids" readonly="1" nolabel="1">
+                                <list>
+                                    <field name="bom_id"      string="BOM / Product"/>
+                                    <field name="product_qty" string="Quantity"/>
+                                    <field name="total_cost"  string="Total Cost Price"
+                                           sum="Grand Total Cost"/>
+                                    <field name="total_sales" string="Total Sales Price"
+                                           sum="Grand Total Sales"/>
+                                    <button name="action_open_bom_wizard"
+                                            string="View"
+                                            type="object"
+                                            icon="fa-eye"
+                                            invisible="not bom_id"
+                                            context="{'readonly_bom': True}"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="stage1_grand_cost"      readonly="1" string="Grand Total Cost"/>
+                                <field name="stage1_grand_sales"     readonly="1" string="Grand Total Sales"/>
+                                <field name="stage1_expected_profit" readonly="1" string="Expected Profit"
+                                       class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
 
-                    <group string="Results" invisible="state != 'approved'">
-                        <field name="sale_order_id" string="Sales Quotation"/>
-                    </group>
+                        <!-- ─── S2 - BOM Lines ────────────────────────── -->
+                        <page string="S2 - BOM Lines">
+                            <field name="stage2_line_ids" readonly="1" nolabel="1">
+                                <list>
+                                    <field name="bom_id"      string="BOM / Product"/>
+                                    <field name="product_qty" string="Quantity"/>
+                                    <field name="total_cost"  string="Total Cost Price"
+                                           sum="Grand Total Cost"/>
+                                    <field name="total_sales" string="Total Sales Price"
+                                           sum="Grand Total Sales"/>
+                                    <button name="action_open_bom_wizard"
+                                            string="View"
+                                            type="object"
+                                            icon="fa-eye"
+                                            invisible="not bom_id"
+                                            context="{'readonly_bom': True}"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="stage2_grand_cost"      readonly="1" string="Grand Total Cost"/>
+                                <field name="stage2_grand_sales"     readonly="1" string="Grand Total Sales"/>
+                                <field name="stage2_expected_profit" readonly="1" string="Expected Profit"
+                                       class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+
+                        <!-- ─── S3 - BOM Lines ────────────────────────── -->
+                        <page string="S3 - BOM Lines">
+                            <field name="stage3_line_ids" readonly="1" nolabel="1">
+                                <list>
+                                    <field name="bom_id"      string="BOM / Product"/>
+                                    <field name="product_qty" string="Quantity"/>
+                                    <field name="total_cost"  string="Total Cost Price"
+                                           sum="Grand Total Cost"/>
+                                    <field name="total_sales" string="Total Sales Price"
+                                           sum="Grand Total Sales"/>
+                                    <button name="action_open_bom_wizard"
+                                            string="View"
+                                            type="object"
+                                            icon="fa-eye"
+                                            invisible="not bom_id"
+                                            context="{'readonly_bom': True}"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="stage3_grand_cost"      readonly="1" string="Grand Total Cost"/>
+                                <field name="stage3_grand_sales"     readonly="1" string="Grand Total Sales"/>
+                                <field name="stage3_expected_profit" readonly="1" string="Expected Profit"
+                                       class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter/>
             </form>
         </field>
     </record>
+
 </odoo>

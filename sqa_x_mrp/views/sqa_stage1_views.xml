@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ══════════════════════════════════════════════════
-         sqa.stage1.bom  —  WIZARD FORM (opens as dialog)
-         parent: mirrors mrp.bom header
-         child:  sqa.stage1.bom.line list (editable)
-    ══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════════
+         sqa.stage1.bom  —  WIZARD DIALOG
+         Opens directly when user clicks a BOM line row.
+         Parent: bom_id + product_qty
+         Child:  bom_line_ids (editable table)
+         Footer: Save & Close | Discard
+    ═══════════════════════════════════════════════════════ -->
     <record id="view_sqa_stage1_bom_form" model="ir.ui.view">
         <field name="name">sqa.stage1.bom.form</field>
         <field name="model">sqa.stage1.bom</field>
@@ -14,30 +16,21 @@
                 <sheet>
                     <group>
                         <group string="Finish Product">
-                            <field name="bom_id"
-                                   string="BOM / Product"
-                                   readonly="1"/>
+                            <field name="bom_id" string="BOM / Product" readonly="1"/>
                             <field name="product_qty" string="Quantity"/>
                         </group>
                         <group string="Totals">
-                            <field name="total_cost"
-                                   string="Total Cost Price"
-                                   readonly="1"/>
-                            <field name="total_sales"
-                                   string="Total Sales Price"
-                                   readonly="1"/>
+                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
                         </group>
                     </group>
                     <separator string="Component Lines"/>
                     <field name="bom_line_ids" nolabel="1">
                         <list editable="bottom">
-                            <field name="product_id"
-                                   string="Component"
-                                   options="{'no_create': True}"/>
+                            <field name="product_id"  string="Component" options="{'no_create': True}"/>
                             <field name="product_qty" string="Quantity"/>
                             <field name="cost_price"  string="Cost Price"/>
                             <field name="sales_price" string="Sales Price"/>
-                            <field name="mrp_bom_line_id" invisible="1"/>
                         </list>
                     </field>
                 </sheet>
@@ -52,45 +45,9 @@
         </field>
     </record>
 
-    <!-- ══════════════════════════════════════════════════
-         sqa.stage1.line  —  FORM (not used directly,
-         but needed so open_form_view has a target)
-         We override it to show the BOM wizard button.
-    ══════════════════════════════════════════════════ -->
-    <record id="view_sqa_stage1_line_form" model="ir.ui.view">
-        <field name="name">sqa.stage1.line.form</field>
-        <field name="model">sqa.stage1.line</field>
-        <field name="arch" type="xml">
-            <form string="BOM Line">
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="bom_id"
-                                   string="BOM / Product"
-                                   options="{'no_create': True}"/>
-                            <field name="product_qty" string="Quantity"/>
-                        </group>
-                        <group>
-                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
-                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
-                        </group>
-                    </group>
-                    <div class="o_row mt8">
-                        <button name="action_open_bom_wizard"
-                                string="Open / Edit Component Lines"
-                                type="object"
-                                class="btn-primary"
-                                invisible="not bom_id"/>
-                    </div>
-                    <field name="sqa_stage1_bom_id" invisible="1"/>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <!-- ══════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════
          sqa.stage1  —  LIST
-    ══════════════════════════════════════════════════ -->
+    ═══════════════════════════════════════════════════════ -->
     <record id="view_sqa_stage1_list" model="ir.ui.view">
         <field name="name">sqa.stage1.list</field>
         <field name="model">sqa.stage1</field>
@@ -104,18 +61,18 @@
                 <field name="state" widget="badge"
                        decoration-success="state == 'checked'"
                        decoration-muted="state == 'draft'"/>
-                <field name="create_date"/>
             </list>
         </field>
     </record>
 
-    <!-- ══════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════
          sqa.stage1  —  FORM
-         BOM Lines list: open_form_view="True" so clicking
-         a row opens view_sqa_stage1_line_form (above),
-         which has the "Open / Edit Component Lines" button
-         that fires action_open_bom_wizard → dialog.
-    ══════════════════════════════════════════════════ -->
+         BOM Lines list:
+           - editable="bottom" for quick inline bom_id selection
+           - Each row has an "Edit" button that fires
+             action_open_bom_wizard → opens sqa.stage1.bom dialog
+           - No intermediate sqa.stage1.line form needed
+    ═══════════════════════════════════════════════════════ -->
     <record id="view_sqa_stage1_form" model="ir.ui.view">
         <field name="name">sqa.stage1.form</field>
         <field name="model">sqa.stage1</field>
@@ -143,8 +100,7 @@
                     <group>
                         <group>
                             <field name="pre_order_ref" readonly="1"/>
-                            <field name="partner_id"
-                                   required="1"
+                            <field name="partner_id" required="1"
                                    options="{'no_create': True}"/>
                         </group>
                         <group>
@@ -154,11 +110,7 @@
                     </group>
                     <notebook>
                         <page string="BOM Lines">
-                            <!-- open_form_view="True":
-                                 clicking a row opens sqa.stage1.line form
-                                 (view_sqa_stage1_line_form defined above)  -->
-                            <field name="sqa_stage1_line_ids"
-                                   open_form_view="True">
+                            <field name="sqa_stage1_line_ids" nolabel="1">
                                 <list editable="bottom">
                                     <field name="bom_id"
                                            string="BOM / Product"
@@ -172,6 +124,11 @@
                                            string="Total Sales Price"
                                            readonly="1"
                                            sum="Grand Total Sales"/>
+                                    <button name="action_open_bom_wizard"
+                                            string="Edit Components"
+                                            type="object"
+                                            icon="fa-edit"
+                                            invisible="not bom_id"/>
                                 </list>
                             </field>
                         </page>
@@ -189,7 +146,7 @@
         <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create a new First Stage costing record.
+                Create a new Stage 1 costing record.
             </p>
         </field>
     </record>

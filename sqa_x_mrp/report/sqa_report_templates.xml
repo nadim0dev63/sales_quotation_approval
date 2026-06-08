@@ -6,43 +6,107 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h2>Stage 1 - Initial Costing</h2>
-                        <div class="row mt32">
-                            <div class="col-6">
-                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
-                                <strong>Pre-Order Ref:</strong> <t t-out="doc.pre_order_ref"/><br/>
-                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
-                                <strong>Status:</strong> <t t-out="doc.state"/>
+                        <div class="oe_structure">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2 class="text-center">Stage 1 - Initial Costing Report</h2>
+                                    <hr/>
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <strong>Grand Total Cost:</strong> <t t-out="doc.grand_total_cost"/><br/>
-                                <strong>Grand Total Sales:</strong> <t t-out="doc.grand_total_sales"/><br/>
-                                <strong>Expected Profit:</strong> <t t-out="doc.grand_total_sales - doc.grand_total_cost"/>
+                            
+                            <div class="row mt32">
+                                <div class="col-6">
+                                    <strong>Reference:</strong> <span t-field="doc.name"/><br/>
+                                    <strong>Pre-Order Ref:</strong> <span t-field="doc.pre_order_ref"/><br/>
+                                    <strong>Customer:</strong> <span t-field="doc.partner_id.name"/><br/>
+                                    <strong>Status:</strong> 
+                                    <span t-if="doc.state == 'draft'" class="text-muted">Draft</span>
+                                    <span t-if="doc.state == 'checked'" class="text-success">Checked</span>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light p-2 rounded">
+                                        <strong>Grand Total Cost:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_cost)"/><br/>
+                                        <strong>Grand Total Sales:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_sales)"/><br/>
+                                        <strong class="text-success">Expected Profit:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_sales - doc.grand_total_cost)"/>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <h4>BOM Lines</h4>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Total Cost</th>
-                                    <th>Total Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="doc.sqa_stage1_line_ids" t-as="line">
-                                    <tr>
-                                        <td><t t-out="line.bom_id.product_id.name"/></td>
-                                        <td><t t-out="line.product_qty"/></td>
-                                        <td><t t-out="line.total_cost"/></td>
-                                        <td><t t-out="line.total_sales"/></td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                        <div class="footer mt32">
-                            <small>Generated on <t t-out="format_date(datetime.datetime.now())"/></small>
+
+                            <!-- BOM Lines with Components -->
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <h4>BOM Lines with Components</h4>
+                                    <t t-foreach="doc.sqa_stage1_line_ids" t-as="line">
+                                        <div class="mt16">
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr class="bg-primary text-white">
+                                                        <th colspan="4">FINISH PRODUCT</th>
+                                                        <th class="text-end">TOTALS</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <strong>BOM/Product:</strong> <span t-field="line.bom_id.display_name"/>
+                                                            <br/>
+                                                            <strong>Quantity:</strong> <span t-esc="'{:,.2f}'.format(line.product_qty)"/>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong>Total Cost Price:</strong><br/>
+                                                            <span t-esc="'{:,.2f}'.format(line.total_cost)"/>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong>Total Sales Price:</strong><br/>
+                                                            <span t-esc="'{:,.2f}'.format(line.total_sales)"/>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            
+                                            <!-- Component Lines -->
+                                            <table class="table table-sm table-bordered mt8">
+                                                <thead>
+                                                    <tr class="bg-light">
+                                                        <th>Component</th>
+                                                        <th class="text-end">Quantity</th>
+                                                        <th class="text-end">Cost Price</th>
+                                                        <th class="text-end">Sales Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-if="line.sqa_stage1_bom_id">
+                                                        <t t-foreach="line.sqa_stage1_bom_id.bom_line_ids" t-as="component">
+                                                            <tr>
+                                                                <td><span t-field="component.product_id.name"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.product_qty)"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.cost_price)"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.sales_price)"/></td>
+                                                            </tr>
+                                                        </t>
+                                                    </t>
+                                                    <t t-if="not line.sqa_stage1_bom_id or not line.sqa_stage1_bom_id.bom_line_ids">
+                                                        <tr>
+                                                            <td colspan="4" class="text-muted text-center">No components found for this BOM</td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <strong>Note:</strong> This report shows the initial costing estimates from Stage 1.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </t>
@@ -56,42 +120,109 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h2>Stage 2 - Partial Review</h2>
-                        <div class="row mt32">
-                            <div class="col-6">
-                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
-                                <strong>Pre-Order Ref:</strong> <t t-out="doc.pre_order_ref"/><br/>
-                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
-                                <strong>Stage 1 Ref:</strong> <t t-out="doc.stage1_id.name"/><br/>
-                                <strong>Status:</strong> <t t-out="doc.state"/>
+                        <div class="oe_structure">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2 class="text-center">Stage 2 - Partial Review Report</h2>
+                                    <hr/>
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <strong>Grand Total Cost:</strong> <t t-out="doc.grand_total_cost"/><br/>
-                                <strong>Grand Total Sales:</strong> <t t-out="doc.grand_total_sales"/><br/>
-                                <strong>Expected Profit:</strong> <t t-out="doc.grand_total_sales - doc.grand_total_cost"/>
+                            
+                            <div class="row mt32">
+                                <div class="col-6">
+                                    <strong>Reference:</strong> <span t-field="doc.name"/><br/>
+                                    <strong>Pre-Order Ref:</strong> <span t-field="doc.pre_order_ref"/><br/>
+                                    <strong>Customer:</strong> <span t-field="doc.partner_id.name"/><br/>
+                                    <strong>Stage 1 Ref:</strong> <span t-field="doc.stage1_id.name"/><br/>
+                                    <strong>Status:</strong> 
+                                    <span t-if="doc.state == 'draft'" class="text-muted">Draft</span>
+                                    <span t-if="doc.state == 'checked'" class="text-success">Checked</span>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light p-2 rounded">
+                                        <strong>Grand Total Cost:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_cost)"/><br/>
+                                        <strong>Grand Total Sales:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_sales)"/><br/>
+                                        <strong class="text-success">Expected Profit:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_sales - doc.grand_total_cost)"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BOM Lines with Components -->
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <h4>BOM Lines with Components</h4>
+                                    <t t-foreach="doc.sqa_stage2_line_ids" t-as="line">
+                                        <div class="mt16">
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr class="bg-primary text-white">
+                                                        <th colspan="4">FINISH PRODUCT</th>
+                                                        <th class="text-end">TOTALS</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <strong>BOM/Product:</strong> <span t-field="line.bom_id.display_name"/>
+                                                            <br/>
+                                                            <strong>Quantity:</strong> <span t-esc="'{:,.2f}'.format(line.product_qty)"/>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong>Total Cost Price:</strong><br/>
+                                                            <span t-esc="'{:,.2f}'.format(line.total_cost)"/>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong>Total Sales Price:</strong><br/>
+                                                            <span t-esc="'{:,.2f}'.format(line.total_sales)"/>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            
+                                            <!-- Component Lines -->
+                                            <table class="table table-sm table-bordered mt8">
+                                                <thead>
+                                                    <tr class="bg-light">
+                                                        <th>Component</th>
+                                                        <th class="text-end">Quantity</th>
+                                                        <th class="text-end">Cost Price</th>
+                                                        <th class="text-end">Sales Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-if="line.sqa_stage2_bom_id">
+                                                        <t t-foreach="line.sqa_stage2_bom_id.bom_line_ids" t-as="component">
+                                                            <tr>
+                                                                <td><span t-field="component.product_id.name"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.product_qty)"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.cost_price)"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.sales_price)"/></td>
+                                                            </tr>
+                                                        </t>
+                                                    </t>
+                                                    <t t-if="not line.sqa_stage2_bom_id or not line.sqa_stage2_bom_id.bom_line_ids">
+                                                        <tr>
+                                                            <td colspan="4" class="text-muted text-center">No components found for this BOM</td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        <strong>Note:</strong> This report shows the reviewed estimates from Stage 2.
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <h4>BOM Lines</h4>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Total Cost</th>
-                                    <th>Total Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="doc.sqa_stage2_line_ids" t-as="line">
-                                    <tr>
-                                        <td><t t-out="line.bom_id.product_id.name"/></td>
-                                        <td><t t-out="line.product_qty"/></td>
-                                        <td><t t-out="line.total_cost"/></td>
-                                        <td><t t-out="line.total_sales"/></td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
                     </div>
                 </t>
             </t>
@@ -104,111 +235,409 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h2>Stage 3 - Final Costing</h2>
-                        <div class="row mt32">
-                            <div class="col-6">
-                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
-                                <strong>Pre-Order Ref:</strong> <t t-out="doc.pre_order_ref"/><br/>
-                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
-                                <strong>Stage 1 Ref:</strong> <t t-out="doc.stage1_id.name"/><br/>
-                                <strong>Stage 2 Ref:</strong> <t t-out="doc.stage2_id.name"/><br/>
-                                <strong>Status:</strong> <t t-out="doc.state"/>
+                        <div class="oe_structure">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2 class="text-center">Stage 3 - Final Costing Report</h2>
+                                    <hr/>
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <strong>Grand Total Cost:</strong> <t t-out="doc.grand_total_cost"/><br/>
-                                <strong>Grand Total Sales:</strong> <t t-out="doc.grand_total_sales"/><br/>
-                                <strong>Expected Profit:</strong> <t t-out="doc.grand_total_sales - doc.grand_total_cost"/>
+                            
+                            <div class="row mt32">
+                                <div class="col-6">
+                                    <strong>Reference:</strong> <span t-field="doc.name"/><br/>
+                                    <strong>Pre-Order Ref:</strong> <span t-field="doc.pre_order_ref"/><br/>
+                                    <strong>Customer:</strong> <span t-field="doc.partner_id.name"/><br/>
+                                    <strong>Stage 1 Ref:</strong> <span t-field="doc.stage1_id.name"/><br/>
+                                    <strong>Stage 2 Ref:</strong> <span t-field="doc.stage2_id.name"/><br/>
+                                    <strong>Status:</strong> 
+                                    <span t-if="doc.state == 'draft'" class="text-muted">Draft</span>
+                                    <span t-if="doc.state == 'checked'" class="text-success">Checked</span>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light p-2 rounded">
+                                        <strong>Grand Total Cost:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_cost)"/><br/>
+                                        <strong>Grand Total Sales:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_sales)"/><br/>
+                                        <strong class="text-success">Expected Profit:</strong> 
+                                        <span t-esc="'{:,.2f}'.format(doc.grand_total_sales - doc.grand_total_cost)"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BOM Lines with Components -->
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <h4>BOM Lines with Components</h4>
+                                    <t t-foreach="doc.sqa_stage3_line_ids" t-as="line">
+                                        <div class="mt16">
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr class="bg-primary text-white">
+                                                        <th colspan="4">FINISH PRODUCT</th>
+                                                        <th class="text-end">TOTALS</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <strong>BOM/Product:</strong> <span t-field="line.bom_id.display_name"/>
+                                                            <br/>
+                                                            <strong>Quantity:</strong> <span t-esc="'{:,.2f}'.format(line.product_qty)"/>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong>Total Cost Price:</strong><br/>
+                                                            <span t-esc="'{:,.2f}'.format(line.total_cost)"/>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong>Total Sales Price:</strong><br/>
+                                                            <span t-esc="'{:,.2f}'.format(line.total_sales)"/>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            
+                                            <!-- Component Lines -->
+                                            <table class="table table-sm table-bordered mt8">
+                                                <thead>
+                                                    <tr class="bg-light">
+                                                        <th>Component</th>
+                                                        <th class="text-end">Quantity</th>
+                                                        <th class="text-end">Cost Price</th>
+                                                        <th class="text-end">Sales Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-if="line.sqa_stage3_bom_id">
+                                                        <t t-foreach="line.sqa_stage3_bom_id.bom_line_ids" t-as="component">
+                                                            <tr>
+                                                                <td><span t-field="component.product_id.name"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.product_qty)"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.cost_price)"/></td>
+                                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(component.sales_price)"/></td>
+                                                            </tr>
+                                                        </t>
+                                                    </t>
+                                                    <t t-if="not line.sqa_stage3_bom_id or not line.sqa_stage3_bom_id.bom_line_ids">
+                                                        <tr>
+                                                            <td colspan="4" class="text-muted text-center">No components found for this BOM</td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <div class="alert alert-success">
+                                        <strong>Note:</strong> This report contains the final costing estimates before management approval.
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <h4>BOM Lines</h4>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Total Cost</th>
-                                    <th>Total Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="doc.sqa_stage3_line_ids" t-as="line">
-                                    <tr>
-                                        <td><t t-out="line.bom_id.product_id.name"/></td>
-                                        <td><t t-out="line.product_qty"/></td>
-                                        <td><t t-out="line.total_cost"/></td>
-                                        <td><t t-out="line.total_sales"/></td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
                     </div>
                 </t>
             </t>
         </t>
     </template>
 
-    <!-- Final Stage Report Template -->
+    <!-- Final Stage Report Template (Comparison Stage) -->
     <template id="report_sqa_finalstage">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h2>Final Stage - Management Approval</h2>
-                        <div class="row mt32">
-                            <div class="col-12">
-                                <strong>Reference:</strong> <t t-out="doc.name"/><br/>
-                                <strong>Pre-Order Reference:</strong> <t t-out="doc.pre_order_ref_id.name"/><br/>
-                                <strong>Customer:</strong> <t t-out="doc.partner_id.name"/><br/>
-                                <strong>Approved Stage:</strong> 
-                                <t t-if="doc.quotation_approval == 'stage1'">Stage 1 - Initial Costing</t>
-                                <t t-elif="doc.quotation_approval == 'stage2'">Stage 2 - Partial Review</t>
-                                <t t-elif="doc.quotation_approval == 'stage3'">Stage 3 - Final Costing</t>
-                                <br/>
-                                <strong>Status:</strong> <t t-out="doc.state"/>
+                        <div class="oe_structure">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2 class="text-center">Final Stage - Management Approval Report</h2>
+                                    <hr/>
+                                </div>
                             </div>
-                        </div>
+                            
+                            <div class="row mt32">
+                                <div class="col-6">
+                                    <strong>Reference:</strong> <span t-field="doc.name"/><br/>
+                                    <strong>Pre-Order Reference:</strong> <span t-field="doc.pre_order_ref"/><br/>
+                                    <strong>Customer:</strong> <span t-field="doc.partner_id.name"/><br/>
+                                    <strong>Status:</strong> 
+                                    <span t-if="doc.state == 'draft'" class="text-muted">Draft</span>
+                                    <span t-if="doc.state == 'approved'" class="text-success">Approved</span>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-info p-2 rounded">
+                                        <strong class="text-white">Approved Stage:</strong>
+                                        <strong class="text-white">
+                                            <span t-if="doc.quotation_approval == 'stage1'">Stage 1 - Initial Costing</span>
+                                            <span t-if="doc.quotation_approval == 'stage2'">Stage 2 - Partial Review</span>
+                                            <span t-if="doc.quotation_approval == 'stage3'">Stage 3 - Final Costing</span>
+                                            <span t-if="not doc.quotation_approval">Not Selected</span>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <h4>Stage Comparison</h4>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Stage</th>
-                                    <th>Grand Total Cost</th>
-                                    <th>Grand Total Sales</th>
-                                    <th>Expected Profit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-attf-class="text-success #{'fw-bold' if doc.quotation_approval == 'stage1' else ''}">
-                                    <td>Stage 1 - Initial Costing</td>
-                                    <td><t t-out="doc.stage1_grand_cost"/></td>
-                                    <td><t t-out="doc.stage1_grand_sales"/></td>
-                                    <td><t t-out="doc.stage1_expected_profit"/></td>
-                                </tr>
-                                <tr t-attf-class="text-success #{'fw-bold' if doc.quotation_approval == 'stage2' else ''}">
-                                    <td>Stage 2 - Partial Review</td>
-                                    <td><t t-out="doc.stage2_grand_cost"/></td>
-                                    <td><t t-out="doc.stage2_grand_sales"/></td>
-                                    <td><t t-out="doc.stage2_expected_profit"/></td>
-                                </tr>
-                                <tr t-attf-class="text-success #{'fw-bold' if doc.quotation_approval == 'stage3' else ''}">
-                                    <td>Stage 3 - Final Costing</td>
-                                    <td><t t-out="doc.stage3_grand_cost"/></td>
-                                    <td><t t-out="doc.stage3_grand_sales"/></td>
-                                    <td><t t-out="doc.stage3_expected_profit"/></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <!-- Stage Comparison Table -->
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <h4>Stage Comparison</h4>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr class="bg-secondary text-white">
+                                                <th>Stage</th>
+                                                <th class="text-end">Grand Total Cost</th>
+                                                <th class="text-end">Grand Total Sales</th>
+                                                <th class="text-end">Expected Profit</th>
+                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-attf-class="#{'table-success fw-bold' if doc.quotation_approval == 'stage1' else ''}">
+                                                <td>
+                                                    Stage 1 - Initial Costing
+                                                    <span t-if="doc.quotation_approval == 'stage1'" class="badge bg-success ms-2">SELECTED</span>
+                                                </td>
+                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(doc.stage1_grand_cost)"/></td>
+                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(doc.stage1_grand_sales)"/></td>
+                                                <td class="text-end">
+                                                    <span t-esc="'{:,.2f}'.format(doc.stage1_expected_profit)"/>
+                                                </td>
+                                            </tr>
+                                            <tr t-attf-class="#{'table-success fw-bold' if doc.quotation_approval == 'stage2' else ''}">
+                                                <td>
+                                                    Stage 2 - Partial Review
+                                                    <span t-if="doc.quotation_approval == 'stage2'" class="badge bg-success ms-2">SELECTED</span>
+                                                </td>
+                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(doc.stage2_grand_cost)"/></td>
+                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(doc.stage2_grand_sales)"/></td>
+                                                <td class="text-end">
+                                                    <span t-esc="'{:,.2f}'.format(doc.stage2_expected_profit)"/>
+                                                </td>
+                                            </tr>
+                                            <tr t-attf-class="#{'table-success fw-bold' if doc.quotation_approval == 'stage3' else ''}">
+                                                <td>
+                                                    Stage 3 - Final Costing
+                                                    <span t-if="doc.quotation_approval == 'stage3'" class="badge bg-success ms-2">SELECTED</span>
+                                                </td>
+                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(doc.stage3_grand_cost)"/></td>
+                                                <td class="text-end"><span t-esc="'{:,.2f}'.format(doc.stage3_grand_sales)"/></td>
+                                                <td class="text-end">
+                                                    <span t-esc="'{:,.2f}'.format(doc.stage3_expected_profit)"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
-                        <div t-if="doc.sale_order_id" class="mt32">
-                            <h4>Sales Quotation</h4>
-                            <p><strong>Reference:</strong> <t t-out="doc.sale_order_id.name"/></p>
-                        </div>
+                            <!-- Approved Stage BOM Lines with Components -->
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <h4>Approved Stage - BOM Lines with Components</h4>
+                                    
+                                    <!-- Stage 1 Approved -->
+                                    <div t-if="doc.quotation_approval == 'stage1'">
+                                        <t t-foreach="doc.stage1_line_ids" t-as="line">
+                                            <div class="mt16">
+                                                <table class="table table-sm table-bordered">
+                                                    <thead>
+                                                        <tr class="bg-primary text-white">
+                                                            <th colspan="4">FINISH PRODUCT</th>
+                                                            <th class="text-end">TOTALS</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <strong>BOM/Product:</strong> <span t-field="line.bom_id.display_name"/>
+                                                                <br/>
+                                                                <strong>Quantity:</strong> <span t-esc="'{:,.2f}'.format(line.product_qty)"/>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <strong>Total Cost Price:</strong><br/>
+                                                                <span t-esc="'{:,.2f}'.format(line.total_cost)"/>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <strong>Total Sales Price:</strong><br/>
+                                                                <span t-esc="'{:,.2f}'.format(line.total_sales)"/>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
+                                                <table class="table table-sm table-bordered mt8">
+                                                    <thead>
+                                                        <tr class="bg-light">
+                                                            <th>Component</th>
+                                                            <th class="text-end">Quantity</th>
+                                                            <th class="text-end">Cost Price</th>
+                                                            <th class="text-end">Sales Price</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-if="line.sqa_stage1_bom_id">
+                                                            <t t-foreach="line.sqa_stage1_bom_id.bom_line_ids" t-as="component">
+                                                                <tr>
+                                                                    <td><span t-field="component.product_id.name"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.product_qty)"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.cost_price)"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.sales_price)"/></td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </t>
+                                    </div>
 
-                        <div class="footer mt32">
-                            <hr/>
-                            <p>Management Signature: ________________________</p>
-                            <p>Date: <t t-out="format_date(datetime.datetime.now())"/></p>
+                                    <!-- Stage 2 Approved -->
+                                    <div t-if="doc.quotation_approval == 'stage2'">
+                                        <t t-foreach="doc.stage2_line_ids" t-as="line">
+                                            <div class="mt16">
+                                                <table class="table table-sm table-bordered">
+                                                    <thead>
+                                                        <tr class="bg-primary text-white">
+                                                            <th colspan="4">FINISH PRODUCT</th>
+                                                            <th class="text-end">TOTALS</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <strong>BOM/Product:</strong> <span t-field="line.bom_id.display_name"/>
+                                                                <br/>
+                                                                <strong>Quantity:</strong> <span t-esc="'{:,.2f}'.format(line.product_qty)"/>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <strong>Total Cost Price:</strong><br/>
+                                                                <span t-esc="'{:,.2f}'.format(line.total_cost)"/>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <strong>Total Sales Price:</strong><br/>
+                                                                <span t-esc="'{:,.2f}'.format(line.total_sales)"/>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
+                                                <table class="table table-sm table-bordered mt8">
+                                                    <thead>
+                                                        <tr class="bg-light">
+                                                            <th>Component</th>
+                                                            <th class="text-end">Quantity</th>
+                                                            <th class="text-end">Cost Price</th>
+                                                            <th class="text-end">Sales Price</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-if="line.sqa_stage2_bom_id">
+                                                            <t t-foreach="line.sqa_stage2_bom_id.bom_line_ids" t-as="component">
+                                                                <tr>
+                                                                    <td><span t-field="component.product_id.name"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.product_qty)"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.cost_price)"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.sales_price)"/></td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </t>
+                                    </div>
+
+                                    <!-- Stage 3 Approved -->
+                                    <div t-if="doc.quotation_approval == 'stage3'">
+                                        <t t-foreach="doc.stage3_line_ids" t-as="line">
+                                            <div class="mt16">
+                                                <table class="table table-sm table-bordered">
+                                                    <thead>
+                                                        <tr class="bg-primary text-white">
+                                                            <th colspan="4">FINISH PRODUCT</th>
+                                                            <th class="text-end">TOTALS</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <strong>BOM/Product:</strong> <span t-field="line.bom_id.display_name"/>
+                                                                <br/>
+                                                                <strong>Quantity:</strong> <span t-esc="'{:,.2f}'.format(line.product_qty)"/>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <strong>Total Cost Price:</strong><br/>
+                                                                <span t-esc="'{:,.2f}'.format(line.total_cost)"/>
+                                                            </td>
+                                                            <td class="text-end">
+                                                                <strong>Total Sales Price:</strong><br/>
+                                                                <span t-esc="'{:,.2f}'.format(line.total_sales)"/>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
+                                                <table class="table table-sm table-bordered mt8">
+                                                    <thead>
+                                                        <tr class="bg-light">
+                                                            <th>Component</th>
+                                                            <th class="text-end">Quantity</th>
+                                                            <th class="text-end">Cost Price</th>
+                                                            <th class="text-end">Sales Price</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-if="line.sqa_stage3_bom_id">
+                                                            <t t-foreach="line.sqa_stage3_bom_id.bom_line_ids" t-as="component">
+                                                                <tr>
+                                                                    <td><span t-field="component.product_id.name"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.product_qty)"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.cost_price)"/></td>
+                                                                    <td class="text-end"><span t-esc="'{:,.2f}'.format(component.sales_price)"/></td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sales Quotation Information -->
+                            <div t-if="doc.sale_order_id" class="row mt32">
+                                <div class="col-12">
+                                    <div class="alert alert-success">
+                                        <strong>Sales Quotation Created:</strong> 
+                                        <span t-field="doc.sale_order_id.name"/>
+                                        <br/>
+                                        <strong>Sales Order Status:</strong> 
+                                        <span t-field="doc.sale_order_id.state"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Approval Signature Section -->
+                            <div class="row mt64">
+                                <div class="col-12">
+                                    <hr/>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p><strong>Management Signature:</strong> ________________________</p>
+                                            <p><strong>Date:</strong> 
+                                                <span t-esc="doc.write_date and doc.write_date.strftime('%Y-%m-%d') or ''"/>
+                                            </p>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <p><strong>Company Stamp:</strong> ________________________</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </t>
