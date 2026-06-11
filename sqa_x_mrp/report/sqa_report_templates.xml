@@ -35,7 +35,6 @@
                                 </div>
                             </div>
 
-                            <!-- BOM Lines with Components -->
                             <div class="row mt32">
                                 <div class="col-12">
                                     <h4>BOM Lines with Components</h4>
@@ -67,7 +66,6 @@
                                                 </tbody>
                                             </table>
                                             
-                                            <!-- Component Lines -->
                                             <table class="table table-sm table-bordered mt8">
                                                 <thead>
                                                     <tr class="bg-light">
@@ -150,7 +148,6 @@
                                 </div>
                             </div>
 
-                            <!-- BOM Lines with Components -->
                             <div class="row mt32">
                                 <div class="col-12">
                                     <h4>BOM Lines with Components</h4>
@@ -182,7 +179,6 @@
                                                 </tbody>
                                             </table>
                                             
-                                            <!-- Component Lines -->
                                             <table class="table table-sm table-bordered mt8">
                                                 <thead>
                                                     <tr class="bg-light">
@@ -266,7 +262,6 @@
                                 </div>
                             </div>
 
-                            <!-- BOM Lines with Components -->
                             <div class="row mt32">
                                 <div class="col-12">
                                     <h4>BOM Lines with Components</h4>
@@ -298,7 +293,6 @@
                                                 </tbody>
                                             </table>
                                             
-                                            <!-- Component Lines -->
                                             <table class="table table-sm table-bordered mt8">
                                                 <thead>
                                                     <tr class="bg-light">
@@ -345,7 +339,7 @@
         </t>
     </template>
 
-    <!-- Final Stage Report Template (Comparison Stage) -->
+    <!-- Final Stage Report Template -->
     <template id="report_sqa_finalstage">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
@@ -381,7 +375,6 @@
                                 </div>
                             </div>
 
-                            <!-- Stage Comparison Table -->
                             <div class="row mt32">
                                 <div class="col-12">
                                     <h4>Stage Comparison</h4>
@@ -392,7 +385,7 @@
                                                 <th class="text-end">Grand Total Cost</th>
                                                 <th class="text-end">Grand Total Sales</th>
                                                 <th class="text-end">Expected Profit</th>
-                                             </tr>
+                                              </tr>
                                         </thead>
                                         <tbody>
                                             <tr t-attf-class="#{'table-success fw-bold' if doc.quotation_approval == 'stage1' else ''}">
@@ -433,12 +426,10 @@
                                 </div>
                             </div>
 
-                            <!-- Approved Stage BOM Lines with Components -->
                             <div class="row mt32">
                                 <div class="col-12">
                                     <h4>Approved Stage - BOM Lines with Components</h4>
                                     
-                                    <!-- Stage 1 Approved -->
                                     <div t-if="doc.quotation_approval == 'stage1'">
                                         <t t-foreach="doc.stage1_line_ids" t-as="line">
                                             <div class="mt16">
@@ -494,7 +485,6 @@
                                         </t>
                                     </div>
 
-                                    <!-- Stage 2 Approved -->
                                     <div t-if="doc.quotation_approval == 'stage2'">
                                         <t t-foreach="doc.stage2_line_ids" t-as="line">
                                             <div class="mt16">
@@ -550,7 +540,6 @@
                                         </t>
                                     </div>
 
-                                    <!-- Stage 3 Approved -->
                                     <div t-if="doc.quotation_approval == 'stage3'">
                                         <t t-foreach="doc.stage3_line_ids" t-as="line">
                                             <div class="mt16">
@@ -608,7 +597,6 @@
                                 </div>
                             </div>
 
-                            <!-- Sales Quotation Information -->
                             <div t-if="doc.sale_order_id" class="row mt32">
                                 <div class="col-12">
                                     <div class="alert alert-success">
@@ -621,7 +609,6 @@
                                 </div>
                             </div>
 
-                            <!-- Approval Signature Section -->
                             <div class="row mt64">
                                 <div class="col-12">
                                     <hr/>
@@ -644,4 +631,290 @@
             </t>
         </t>
     </template>
+
+    <!-- Estimated vs Actual Report Template -->
+    <template id="report_sqa_estimated_vs_actual">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h2>Estimated vs Actual Report</h2>
+                                <hr/>
+                            </div>
+                        </div>
+                        <div class="row mt8 mb16">
+                            <div class="col-6">
+                                <table class="table table-sm table-borderless mb-0">
+                                    <tr>
+                                        <td style="width:130px;"><strong>Reference:</strong></td>
+                                        <td><span t-field="doc.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pre-Order Ref:</strong></td>
+                                        <td><span t-field="doc.pre_order_ref"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Customer:</strong></td>
+                                        <td><span t-field="doc.partner_id"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Approved Stage:</strong></td>
+                                        <td>
+                                            <span t-if="doc.quotation_approval == 'stage1'">Stage 1 - Initial Costing</span>
+                                            <span t-if="doc.quotation_approval == 'stage2'">Stage 2 - Partial Review</span>
+                                            <span t-if="doc.quotation_approval == 'stage3'">Stage 3 - Final Costing</span>
+                                            <span t-if="not doc.quotation_approval">Not Selected</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6 text-end pt-2">
+                                <span t-if="doc.state == 'draft'" class="badge bg-secondary" style="font-size:13px;">Draft</span>
+                                <span t-if="doc.state == 'approved'" class="badge bg-success" style="font-size:13px;">Approved</span>
+                            </div>
+                        </div>
+
+                        <div class="row mt8 mb24">
+                            <div class="col-12">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr style="background:#343a40; color:#fff;">
+                                            <th style="width:30%;">Type</th>
+                                            <th class="text-end">Cost Price</th>
+                                            <th class="text-end">Sales Price</th>
+                                            <th class="text-end">Profit</th>
+                                            <th class="text-end">Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="est_cost" t-value="doc._get_selected_grand_cost()"/>
+                                        <t t-set="est_sales" t-value="doc._get_selected_grand_sales()"/>
+                                        <t t-set="est_profit" t-value="est_sales - est_cost"/>
+                                        <t t-set="est_pct" t-value="(est_profit / est_sales * 100.0) if est_sales else 0.0"/>
+                                        <tr>
+                                            <td>
+                                                <strong>Estimated</strong>
+                                                <span t-if="doc.quotation_approval == 'stage1'" class="text-muted"> (Stage 1)</span>
+                                                <span t-if="doc.quotation_approval == 'stage2'" class="text-muted"> (Stage 2)</span>
+                                                <span t-if="doc.quotation_approval == 'stage3'" class="text-muted"> (Stage 3)</span>
+                                            </td>
+                                            <td class="text-end"><t t-esc="'{:,.2f}'.format(est_cost)"/></td>
+                                            <td class="text-end"><t t-esc="'{:,.2f}'.format(est_sales)"/></td>
+                                            <td class="text-end"
+                                                t-attf-style="color:#{est_profit >= 0 and '#198754' or '#dc3545'};">
+                                                <strong><t t-esc="'{:,.2f}'.format(est_profit)"/></strong>
+                                            </td>
+                                            <td class="text-end"
+                                                t-attf-style="color:#{est_pct >= 0 and '#198754' or '#dc3545'};">
+                                                <t t-esc="'{:.2f}%'.format(est_pct)"/>
+                                            </td>
+                                        </tr>
+                                        <t t-set="act_profit" t-value="doc.actual_grand_sales - doc.actual_grand_cost"/>
+                                        <t t-set="act_pct" t-value="(act_profit / doc.actual_grand_sales * 100.0) if doc.actual_grand_sales else 0.0"/>
+                                        <tr>
+                                            <td><strong>Actual</strong></td>
+                                            <td class="text-end"><t t-esc="'{:,.2f}'.format(doc.actual_grand_cost)"/></td>
+                                            <td class="text-end"><t t-esc="'{:,.2f}'.format(doc.actual_grand_sales)"/></td>
+                                            <td class="text-end"
+                                                t-attf-style="color:#{act_profit >= 0 and '#198754' or '#dc3545'};">
+                                                <strong><t t-esc="'{:,.2f}'.format(act_profit)"/></strong>
+                                            </td>
+                                            <td class="text-end"
+                                                t-attf-style="color:#{act_pct >= 0 and '#198754' or '#dc3545'};">
+                                                <t t-esc="'{:.2f}%'.format(act_pct)"/>
+                                            </td>
+                                        </tr>
+                                        <t t-set="var_cost" t-value="est_cost - doc.actual_grand_cost"/>
+                                        <t t-set="var_sales" t-value="est_sales - doc.actual_grand_sales"/>
+                                        <t t-set="var_profit" t-value="est_profit - act_profit"/>
+                                        <!-- <t t-set="var_cost" t-value="doc.actual_grand_cost - est_cost"/>
+                                        <t t-set="var_sales" t-value="doc.actual_grand_sales - est_sales"/>
+                                        <t t-set="var_profit" t-value="act_profit - est_profit"/> -->
+                                        <tr>
+                                            <td><em>Variance</em></td>
+                                            <td class="text-end"><em><t t-esc="'{:+,.2f}'.format(var_cost)"/></em></td>
+                                            <td class="text-end"><em><t t-esc="'{:+,.2f}'.format(var_sales)"/></em></td>
+                                            <td class="text-end"
+                                                t-attf-style="color:#{var_profit >= 0 and '#198754' or '#dc3545'};">
+                                                <em><strong><t t-esc="'{:+,.2f}'.format(var_profit)"/></strong></em>
+                                            </td>
+                                            <td class="text-end"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <h4 style="border-bottom:2px solid #0d6efd; padding-bottom:4px; color:#0d6efd;">
+                                    Estimated
+                                    <span t-if="doc.quotation_approval == 'stage1'"> (Stage 1)</span>
+                                    <span t-if="doc.quotation_approval == 'stage2'"> (Stage 2)</span>
+                                    <span t-if="doc.quotation_approval == 'stage3'"> (Stage 3)</span>
+                                    &#160;&#160;
+                                    <small class="text-dark" style="font-size:13px; font-weight:normal;">
+                                        Grand Total Cost:
+                                        <strong><t t-esc="'{:,.2f}'.format(est_cost)"/></strong>
+                                        &#160;&#160;
+                                        Grand Total Sales:
+                                        <strong><t t-esc="'{:,.2f}'.format(est_sales)"/></strong>
+                                    </small>
+                                </h4>
+
+                                <t t-set="est_lines" t-value="doc._get_selected_lines()"/>
+                                <t t-foreach="est_lines" t-as="line">
+                                    <table class="table table-sm table-bordered mt8 mb-0">
+                                        <thead>
+                                            <tr style="background:#0d6efd; color:#fff;">
+                                                <th style="width:45%; font-size:11px;">BOM / Product</th>
+                                                <th class="text-end" style="font-size:11px;">Quantity</th>
+                                                <th class="text-end" style="font-size:11px;">Total Cost Price</th>
+                                                <th class="text-end" style="font-size:11px;">Total Sales Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="font-weight:600;">
+                                                <td style="font-size:11px;"><span t-field="line.bom_id"/></td>
+                                                <td class="text-end" style="font-size:11px;"><t t-esc="'{:,.2f}'.format(line.product_qty)"/></td>
+                                                <td class="text-end" style="font-size:11px;"><t t-esc="'{:,.2f}'.format(line.total_cost)"/></td>
+                                                <td class="text-end" style="font-size:11px;"><t t-esc="'{:,.2f}'.format(line.total_sales)"/></td>
+                                            </tr>
+                                            <t t-if="doc.quotation_approval == 'stage1' and line.sqa_stage1_bom_id and line.sqa_stage1_bom_id.bom_line_ids">
+                                                <t t-foreach="line.sqa_stage1_bom_id.bom_line_ids" t-as="bl">
+                                                    <tr style="background:#f0f4ff; font-size:10px;">
+                                                        <td style="padding-left:24px; color:#444;">
+                                                            ↳ <span t-field="bl.product_id"/>
+                                                        </td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.product_qty)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.cost_price)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.sales_price)"/></td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-if="doc.quotation_approval == 'stage2' and line.sqa_stage2_bom_id and line.sqa_stage2_bom_id.bom_line_ids">
+                                                <t t-foreach="line.sqa_stage2_bom_id.bom_line_ids" t-as="bl">
+                                                    <tr style="background:#f0f4ff; font-size:10px;">
+                                                        <td style="padding-left:24px; color:#444;">
+                                                            ↳ <span t-field="bl.product_id"/>
+                                                        </td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.product_qty)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.cost_price)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.sales_price)"/></td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-if="doc.quotation_approval == 'stage3' and line.sqa_stage3_bom_id and line.sqa_stage3_bom_id.bom_line_ids">
+                                                <t t-foreach="line.sqa_stage3_bom_id.bom_line_ids" t-as="bl">
+                                                    <tr style="background:#f0f4ff; font-size:10px;">
+                                                        <td style="padding-left:24px; color:#444;">
+                                                            ↳ <span t-field="bl.product_id"/>
+                                                        </td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.product_qty)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.cost_price)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.sales_price)"/></td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-if="not ((doc.quotation_approval == 'stage1' and line.sqa_stage1_bom_id and line.sqa_stage1_bom_id.bom_line_ids) or (doc.quotation_approval == 'stage2' and line.sqa_stage2_bom_id and line.sqa_stage2_bom_id.bom_line_ids) or (doc.quotation_approval == 'stage3' and line.sqa_stage3_bom_id and line.sqa_stage3_bom_id.bom_line_ids))">
+                                                <tr>
+                                                    <td colspan="4" class="text-muted text-center" style="font-size:11px;">No components found</td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-if="not est_lines">
+                                    <div class="alert alert-warning mt8">
+                                        <i class="fa fa-warning"></i> No estimated BOM lines found. Please select an approval stage first.
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt24">
+                            <div class="col-12">
+                                <h4 style="border-bottom:2px solid #198754; padding-bottom:4px; color:#198754;">
+                                    Actual BOM
+                                    &#160;&#160;
+                                    <small class="text-dark" style="font-size:13px; font-weight:normal;">
+                                        Grand Total Cost:
+                                        <strong><t t-esc="'{:,.2f}'.format(doc.actual_grand_cost)"/></strong>
+                                        &#160;&#160;
+                                        Grand Total Sales:
+                                        <strong><t t-esc="'{:,.2f}'.format(doc.actual_grand_sales)"/></strong>
+                                    </small>
+                                </h4>
+
+                                <t t-foreach="doc.actual_bom_line_ids" t-as="line">
+                                    <table class="table table-sm table-bordered mt8 mb-0">
+                                        <thead>
+                                            <tr style="background:#198754; color:#fff;">
+                                                <th style="width:45%; font-size:11px;">BOM / Product</th>
+                                                <th class="text-end" style="font-size:11px;">Quantity</th>
+                                                <th class="text-end" style="font-size:11px;">Total Cost Price</th>
+                                                <th class="text-end" style="font-size:11px;">Total Sales Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="font-weight:600;">
+                                                <td style="font-size:11px;"><span t-field="line.bom_id"/></td>
+                                                <td class="text-end" style="font-size:11px;"><t t-esc="'{:,.2f}'.format(line.product_qty)"/></td>
+                                                <td class="text-end" style="font-size:11px;"><t t-esc="'{:,.2f}'.format(line.total_cost)"/></td>
+                                                <td class="text-end" style="font-size:11px;"><t t-esc="'{:,.2f}'.format(line.total_sales)"/></td>
+                                            </tr>
+                                            <t t-if="line.sqa_actual_bom_id and line.sqa_actual_bom_id.bom_line_ids">
+                                                <t t-foreach="line.sqa_actual_bom_id.bom_line_ids" t-as="bl">
+                                                    <tr style="background:#f0fff4; font-size:10px;">
+                                                        <td style="padding-left:24px; color:#444;">
+                                                            ↳ <span t-field="bl.product_id"/>
+                                                        </td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.product_qty)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.cost_price)"/></td>
+                                                        <td class="text-end" style="color:#444;"><t t-esc="'{:,.2f}'.format(bl.sales_price)"/></td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-if="not line.sqa_actual_bom_id or not line.sqa_actual_bom_id.bom_line_ids">
+                                                <tr>
+                                                    <td colspan="4" class="text-muted text-center" style="font-size:11px;">No components found</td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-if="not doc.actual_bom_line_ids">
+                                    <div class="alert alert-info mt8">
+                                        <i class="fa fa-info-circle"></i> No actual BOM lines loaded. Please add actual BOM lines in the "Actual - BOM Lines" tab.
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- <div class="row mt32" t-if="est_lines and doc.actual_bom_line_ids">
+                            <div class="col-12">
+                                <div class="alert alert-secondary">
+                                    <strong>Summary:</strong><br/>
+                                    <span t-attf-style="color:#{var_cost >= 0 and '#198754' or '#dc3545'}">
+                                        Cost Variance: <t t-esc="'{:+,.2f}'.format(var_cost)"/>
+                                    </span><br/>
+                                    <span t-attf-style="color:#{var_sales >= 0 and '#198754' or '#dc3545'}">
+                                        Sales Variance: <t t-esc="'{:+,.2f}'.format(var_sales)"/>
+                                    </span><br/>
+                                    <span t-attf-style="color:#{var_profit >= 0 and '#198754' or '#dc3545'}">
+                                        Profit Variance: <t t-esc="'{:+,.2f}'.format(var_profit)"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div> -->
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
 </odoo>

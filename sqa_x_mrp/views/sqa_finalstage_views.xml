@@ -2,6 +2,77 @@
 <odoo>
 
     <!-- ═══════════════════════════════════════════════════════════════════
+         Actual BOM popup views (for Final Stage Actual BOM Lines)
+    ═══════════════════════════════════════════════════════════════════════ -->
+
+    <record id="view_sqa_finalstage_actual_bom_form" model="ir.ui.view">
+        <field name="name">sqa.finalstage.actual.bom.form</field>
+        <field name="model">sqa.finalstage.actual.bom</field>
+        <field name="arch" type="xml">
+            <form string="Actual BOM Detail">
+                <sheet>
+                    <group>
+                        <group string="Finish Product">
+                            <field name="bom_id" string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="total_cost" string="Total Cost Price" readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
+                        </group>
+                    </group>
+                    <separator string="Component Lines"/>
+                    <field name="bom_line_ids" nolabel="1">
+                        <list editable="bottom">
+                            <field name="product_id" string="Component" options="{'no_create': True}"/>
+                            <field name="product_qty" string="Quantity"/>
+                            <field name="cost_price" string="Cost Price"/>
+                            <field name="sales_price" string="Sales Price"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_save_and_close" string="Save &amp; Close" type="object" class="btn-primary"/>
+                    <button string="Discard" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sqa_finalstage_actual_bom_form_readonly" model="ir.ui.view">
+        <field name="name">sqa.finalstage.actual.bom.form.readonly</field>
+        <field name="model">sqa.finalstage.actual.bom</field>
+        <field name="arch" type="xml">
+            <form string="Actual BOM Detail (View Only)">
+                <sheet>
+                    <group>
+                        <group string="Finish Product">
+                            <field name="bom_id" string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity" readonly="1"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="total_cost" string="Total Cost Price" readonly="1"/>
+                            <field name="total_sales" string="Total Sales Price" readonly="1"/>
+                        </group>
+                    </group>
+                    <separator string="Component Lines"/>
+                    <field name="bom_line_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="product_id" string="Component"/>
+                            <field name="product_qty" string="Quantity"/>
+                            <field name="cost_price" string="Cost Price"/>
+                            <field name="sales_price" string="Sales Price"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
          Read-only BOM popup views (for Final Stage "View" buttons)
     ═══════════════════════════════════════════════════════════════════════ -->
 
@@ -13,20 +84,20 @@
                 <sheet>
                     <group>
                         <group string="Finish Product">
-                            <field name="bom_id"      string="BOM / Product" readonly="1"/>
-                            <field name="product_qty" string="Quantity"      readonly="1"/>
+                            <field name="bom_id" string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity" readonly="1"/>
                         </group>
                         <group string="Totals">
-                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_cost" string="Total Cost Price" readonly="1"/>
                             <field name="total_sales" string="Total Sales Price" readonly="1"/>
                         </group>
                     </group>
                     <separator string="Component Lines"/>
                     <field name="bom_line_ids" nolabel="1" readonly="1">
                         <list>
-                            <field name="product_id"  string="Component"/>
+                            <field name="product_id" string="Component"/>
                             <field name="product_qty" string="Quantity"/>
-                            <field name="cost_price"  string="Cost Price"/>
+                            <field name="cost_price" string="Cost Price"/>
                             <field name="sales_price" string="Sales Price"/>
                         </list>
                     </field>
@@ -46,20 +117,20 @@
                 <sheet>
                     <group>
                         <group string="Finish Product">
-                            <field name="bom_id"      string="BOM / Product" readonly="1"/>
-                            <field name="product_qty" string="Quantity"      readonly="1"/>
+                            <field name="bom_id" string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity" readonly="1"/>
                         </group>
                         <group string="Totals">
-                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_cost" string="Total Cost Price" readonly="1"/>
                             <field name="total_sales" string="Total Sales Price" readonly="1"/>
                         </group>
                     </group>
                     <separator string="Component Lines"/>
                     <field name="bom_line_ids" nolabel="1" readonly="1">
                         <list>
-                            <field name="product_id"  string="Component"/>
+                            <field name="product_id" string="Component"/>
                             <field name="product_qty" string="Quantity"/>
-                            <field name="cost_price"  string="Cost Price"/>
+                            <field name="cost_price" string="Cost Price"/>
                             <field name="sales_price" string="Sales Price"/>
                         </list>
                     </field>
@@ -79,20 +150,20 @@
                 <sheet>
                     <group>
                         <group string="Finish Product">
-                            <field name="bom_id"      string="BOM / Product" readonly="1"/>
-                            <field name="product_qty" string="Quantity"      readonly="1"/>
+                            <field name="bom_id" string="BOM / Product" readonly="1"/>
+                            <field name="product_qty" string="Quantity" readonly="1"/>
                         </group>
                         <group string="Totals">
-                            <field name="total_cost"  string="Total Cost Price"  readonly="1"/>
+                            <field name="total_cost" string="Total Cost Price" readonly="1"/>
                             <field name="total_sales" string="Total Sales Price" readonly="1"/>
                         </group>
                     </group>
                     <separator string="Component Lines"/>
                     <field name="bom_line_ids" nolabel="1" readonly="1">
                         <list>
-                            <field name="product_id"  string="Component"/>
+                            <field name="product_id" string="Component"/>
                             <field name="product_qty" string="Quantity"/>
-                            <field name="cost_price"  string="Cost Price"/>
+                            <field name="cost_price" string="Cost Price"/>
                             <field name="sales_price" string="Sales Price"/>
                         </list>
                     </field>
@@ -162,11 +233,9 @@
                     </div>
                     <group>
                         <group>
-                            <!-- Selector field (Many2one) — editable until approved -->
                             <field name="pre_order_ref_id"
                                    options="{'no_create': True}"
                                    readonly="state == 'approved'"/>
-                            <!-- Human-readable pre-order ref string (e.g. SQA00001) -->
                             <field name="pre_order_ref" readonly="1"
                                    invisible="not pre_order_ref"/>
                             <field name="partner_id" readonly="1"/>
@@ -183,10 +252,10 @@
                         <!-- ─── S1 - BOM Lines ────────────────────────── -->
                         <page string="S1 - BOM Lines">
                             <field name="stage1_line_ids" readonly="1" nolabel="1">
-                                <list>
-                                    <field name="bom_id"      string="BOM / Product"/>
+                                <list no_open="1">
+                                    <field name="bom_id" string="BOM / Product"/>
                                     <field name="product_qty" string="Quantity"/>
-                                    <field name="total_cost"  string="Total Cost Price"
+                                    <field name="total_cost" string="Total Cost Price"
                                            sum="Grand Total Cost"/>
                                     <field name="total_sales" string="Total Sales Price"
                                            sum="Grand Total Sales"/>
@@ -199,8 +268,8 @@
                                 </list>
                             </field>
                             <group class="oe_subtotal_footer">
-                                <field name="stage1_grand_cost"      readonly="1" string="Grand Total Cost"/>
-                                <field name="stage1_grand_sales"     readonly="1" string="Grand Total Sales"/>
+                                <field name="stage1_grand_cost" readonly="1" string="Grand Total Cost"/>
+                                <field name="stage1_grand_sales" readonly="1" string="Grand Total Sales"/>
                                 <field name="stage1_expected_profit" readonly="1" string="Expected Profit"
                                        class="oe_subtotal_footer_separator"/>
                             </group>
@@ -209,10 +278,10 @@
                         <!-- ─── S2 - BOM Lines ────────────────────────── -->
                         <page string="S2 - BOM Lines">
                             <field name="stage2_line_ids" readonly="1" nolabel="1">
-                                <list>
-                                    <field name="bom_id"      string="BOM / Product"/>
+                                <list no_open="1">
+                                    <field name="bom_id" string="BOM / Product"/>
                                     <field name="product_qty" string="Quantity"/>
-                                    <field name="total_cost"  string="Total Cost Price"
+                                    <field name="total_cost" string="Total Cost Price"
                                            sum="Grand Total Cost"/>
                                     <field name="total_sales" string="Total Sales Price"
                                            sum="Grand Total Sales"/>
@@ -225,8 +294,8 @@
                                 </list>
                             </field>
                             <group class="oe_subtotal_footer">
-                                <field name="stage2_grand_cost"      readonly="1" string="Grand Total Cost"/>
-                                <field name="stage2_grand_sales"     readonly="1" string="Grand Total Sales"/>
+                                <field name="stage2_grand_cost" readonly="1" string="Grand Total Cost"/>
+                                <field name="stage2_grand_sales" readonly="1" string="Grand Total Sales"/>
                                 <field name="stage2_expected_profit" readonly="1" string="Expected Profit"
                                        class="oe_subtotal_footer_separator"/>
                             </group>
@@ -235,10 +304,10 @@
                         <!-- ─── S3 - BOM Lines ────────────────────────── -->
                         <page string="S3 - BOM Lines">
                             <field name="stage3_line_ids" readonly="1" nolabel="1">
-                                <list>
-                                    <field name="bom_id"      string="BOM / Product"/>
+                                <list no_open="1">
+                                    <field name="bom_id" string="BOM / Product"/>
                                     <field name="product_qty" string="Quantity"/>
-                                    <field name="total_cost"  string="Total Cost Price"
+                                    <field name="total_cost" string="Total Cost Price"
                                            sum="Grand Total Cost"/>
                                     <field name="total_sales" string="Total Sales Price"
                                            sum="Grand Total Sales"/>
@@ -251,10 +320,43 @@
                                 </list>
                             </field>
                             <group class="oe_subtotal_footer">
-                                <field name="stage3_grand_cost"      readonly="1" string="Grand Total Cost"/>
-                                <field name="stage3_grand_sales"     readonly="1" string="Grand Total Sales"/>
+                                <field name="stage3_grand_cost" readonly="1" string="Grand Total Cost"/>
+                                <field name="stage3_grand_sales" readonly="1" string="Grand Total Sales"/>
                                 <field name="stage3_expected_profit" readonly="1" string="Expected Profit"
                                        class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+
+                        <!-- ─── Actual - BOM Lines (Manual Load) ────────── -->
+                        <page string="Actual - BOM Lines">
+                            <field name="actual_bom_line_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="bom_id"
+                                           string="BOM / Product"
+                                           options="{'no_create': True}"/>
+                                    <field name="product_qty" string="Quantity"/>
+                                    <field name="total_cost"
+                                           string="Total Cost Price"
+                                           readonly="1"
+                                           sum="Actual Grand Total Cost"/>
+                                    <field name="total_sales"
+                                           string="Total Sales Price"
+                                           readonly="1"
+                                           sum="Actual Grand Total Sales"/>
+                                    <button name="action_open_bom_wizard"
+                                            string="Edit Components"
+                                            type="object"
+                                            icon="fa-edit"
+                                            invisible="not bom_id"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="actual_grand_cost" readonly="1" string="Actual Grand Total Cost"/>
+                                <field name="actual_grand_sales" readonly="1" string="Actual Grand Total Sales"/>
+                                <field name="actual_expected_profit" readonly="1" string="Actual Expected Profit"
+                                       class="oe_subtotal_footer_separator"
+                                       decoration-danger="actual_expected_profit &lt; 0"
+                                       decoration-success="actual_expected_profit >= 0"/>
                             </group>
                         </page>
                     </notebook>

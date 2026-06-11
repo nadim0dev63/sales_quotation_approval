@@ -66,7 +66,6 @@ class SqaStage1(models.Model):
     def _prepare_stage2_vals(self):
         line_vals = []
         for line in self.sqa_stage1_line_ids:
-            # Create sqa.stage2.bom with its lines first, then link via sqa_stage2_bom_id
             bom_line_vals = []
             if line.sqa_stage1_bom_id:
                 for bl in line.sqa_stage1_bom_id.bom_line_ids:
@@ -146,10 +145,37 @@ class SqaStage1Line(models.Model):
             'bom_line_ids': bom_line_vals,
         })
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Ensure sqa_stage1_bom_id is always persisted on save.
+
+        When a line is created from the inline list (onchange produces a NewId
+        virtual record), Odoo does NOT auto-save the linked New record.  We
+        detect that situation here and create the bom record explicitly so the
+        computed total_cost / total_sales fields have a real DB record to read.
+        """
+        records = super().create(vals_list)
+        for rec in records:
+            if rec.bom_id and not rec.sqa_stage1_bom_id:
+                bom_line_vals = [(0, 0, {
+                    'product_id': bl.product_id.id,
+                    'product_qty': bl.product_qty,
+                    'cost_price': bl.product_id.standard_price,
+                    'sales_price': bl.product_id.list_price,
+                }) for bl in rec.bom_id.bom_line_ids]
+                bom_rec = self.env['sqa.stage1.bom'].create({
+                    'bom_id': rec.bom_id.id,
+                    'product_qty': rec.product_qty,
+                    'stage1_line_id': rec.id,
+                    'bom_line_ids': bom_line_vals,
+                })
+                rec.sqa_stage1_bom_id = bom_rec.id
+        return records
+
     def action_open_bom_wizard(self):
         """
-        Called when user clicks a row in the BOM Lines list.
-        Opens sqa.stage1.bom form directly as a dialog — no intermediate form.
+        Called when user clicks Edit Components button in the BOM Lines list.
+        Opens sqa.stage1.bom form directly as a dialog.
         Creates the bom record first if not yet persisted.
         """
         self.ensure_one()
