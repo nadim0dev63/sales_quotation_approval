@@ -12,3 +12,6 @@ access_sqa_stage3_line,sqa.stage3.line,model_sqa_stage3_line,,1,1,1,1
 access_sqa_stage3_bom,sqa.stage3.bom,model_sqa_stage3_bom,,1,1,1,1
 access_sqa_stage3_bom_line,sqa.stage3.bom.line,model_sqa_stage3_bom_line,,1,1,1,1
 access_sqa_finalstage,sqa.finalstage,model_sqa_finalstage,,1,1,1,1
+access_sqa_finalstage_actual_line,sqa.finalstage.actual.line,model_sqa_finalstage_actual_line,,1,1,1,1
+access_sqa_finalstage_actual_bom,sqa.finalstage.actual.bom,model_sqa_finalstage_actual_bom,,1,1,1,1
+access_sqa_finalstage_actual_bom_line,sqa.finalstage.actual.bom.line,model_sqa_finalstage_actual_bom_line,,1,1,1,1

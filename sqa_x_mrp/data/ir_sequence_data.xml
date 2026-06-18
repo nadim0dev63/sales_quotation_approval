@@ -45,5 +45,14 @@
             <field name="padding">4</field>
             <field name="company_id" eval="False"/>
         </record>
+
+        <!-- Comparison Stage Sequence -->
+        <record id="seq_sqa_comparison" model="ir.sequence">
+            <field name="name">SQA Comparison Stage Reference</field>
+            <field name="code">sqa.comparison</field>
+            <field name="prefix">SQA-CMP-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
     </data>
 </odoo>

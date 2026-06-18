@@ -36,4 +36,16 @@
         <field name="binding_model_id" ref="model_sqa_finalstage"/>
         <field name="binding_type">report</field>
     </record>
+
+    <!-- Estimated vs Actual Report (Replaces Comparison Stage) -->
+    <record id="report_action_sqa_estimated_vs_actual" model="ir.actions.report">
+        <field name="name">Estimated vs Actual Report</field>
+        <field name="model">sqa.finalstage</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sqa_x_mrp.report_sqa_estimated_vs_actual</field>
+        <field name="report_file">sqa_x_mrp.report_sqa_estimated_vs_actual</field>
+        <field name="binding_model_id" ref="model_sqa_finalstage"/>
+        <field name="binding_type">report</field>
+    </record>
+
 </odoo>

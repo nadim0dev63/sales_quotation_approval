@@ -85,6 +85,20 @@ class SqaFinalStage(models.Model):
         'sqa.stage3.line', compute='_compute_stage_lines', string='S3 BOM Lines',
     )
 
+    # ── Actual BOM Lines (manually loaded by user) ──────────────────────────
+    actual_bom_line_ids = fields.One2many(
+        'sqa.finalstage.actual.line', 'finalstage_id', string='Actual BOM Lines',
+    )
+    actual_grand_cost = fields.Float(
+        compute='_compute_actual_totals', store=True, string='Actual Grand Total Cost'
+    )
+    actual_grand_sales = fields.Float(
+        compute='_compute_actual_totals', store=True, string='Actual Grand Total Sales'
+    )
+    actual_expected_profit = fields.Float(
+        compute='_compute_actual_totals', store=True, string='Actual Expected Profit'
+    )
+
     quotation_approval = fields.Selection(
         [('stage1', 'Stage 1'), ('stage2', 'Stage 2'), ('stage3', 'Stage 3')],
         string='Quotation Approval', tracking=True,
@@ -114,9 +128,9 @@ class SqaFinalStage(models.Model):
         'pre_order_ref_id.stage2_id.stage3_id',
         'pre_order_ref_id.stage2_id.stage3_id.grand_total_cost',
         'pre_order_ref_id.stage2_id.stage3_id.grand_total_sales',
-        'pre_order_ref_id.state',  # Add dependency on state
-        'pre_order_ref_id.stage2_id.state',  # Add dependency on stage2 state
-        'pre_order_ref_id.stage2_id.stage3_id.state',  # Add dependency on stage3 state
+        'pre_order_ref_id.state',
+        'pre_order_ref_id.stage2_id.state',
+        'pre_order_ref_id.stage2_id.stage3_id.state',
     )
     def _compute_from_pre_order_ref(self):
         for rec in self:
@@ -135,7 +149,7 @@ class SqaFinalStage(models.Model):
                 rec.stage3_grand_sales = 0.0
                 continue
 
-            rec.pre_order_ref = s1.pre_order_ref   # the SQA00001 string
+            rec.pre_order_ref = s1.pre_order_ref
             rec.partner_id = s1.partner_id
             rec.stage1_id = s1
             rec.stage1_grand_cost = s1.grand_total_cost or 0.0
@@ -155,16 +169,20 @@ class SqaFinalStage(models.Model):
         'stage1_grand_cost', 'stage1_grand_sales',
         'stage2_grand_cost', 'stage2_grand_sales',
         'stage3_grand_cost', 'stage3_grand_sales',
-        'pre_order_ref_id',  # Add this to recompute when pre_order_ref_id changes
-        'stage1_id',  # Add this to ensure recomputation when stage1 changes
-        'stage2_id',  # Add this to ensure recomputation when stage2 changes
-        'stage3_id',  # Add this to ensure recomputation when stage3 changes
+        'pre_order_ref_id', 'stage1_id', 'stage2_id', 'stage3_id',
     )
     def _compute_profits(self):
         for rec in self:
             rec.stage1_expected_profit = (rec.stage1_grand_sales or 0.0) - (rec.stage1_grand_cost or 0.0)
             rec.stage2_expected_profit = (rec.stage2_grand_sales or 0.0) - (rec.stage2_grand_cost or 0.0)
             rec.stage3_expected_profit = (rec.stage3_grand_sales or 0.0) - (rec.stage3_grand_cost or 0.0)
+
+    @api.depends('actual_bom_line_ids.total_cost', 'actual_bom_line_ids.total_sales')
+    def _compute_actual_totals(self):
+        for rec in self:
+            rec.actual_grand_cost = sum(rec.actual_bom_line_ids.mapped('total_cost'))
+            rec.actual_grand_sales = sum(rec.actual_bom_line_ids.mapped('total_sales'))
+            rec.actual_expected_profit = (rec.actual_grand_sales or 0.0) - (rec.actual_grand_cost or 0.0)
 
     # ── Computed: pull BOM lines from linked stages ──────────────────────────
     @api.depends('stage1_id', 'stage2_id', 'stage3_id')
@@ -176,23 +194,47 @@ class SqaFinalStage(models.Model):
 
     # ── Override write to ensure recomputation on save ────────────────────────
     def write(self, vals):
-        # If pre_order_ref_id is being changed or if we're saving without changes,
-        # force recomputation of related fields
         result = super().write(vals)
         if 'pre_order_ref_id' in vals or not vals:
-            # Trigger recomputation by modifying a non-stored computed field
             self.modified(['stage1_expected_profit', 'stage2_expected_profit', 'stage3_expected_profit'])
         return result
 
     # ── Override read to ensure values are computed before reading ────────────
     @api.model
     def read(self, fields=None, load='_classic_read'):
-        # Ensure computed fields are up to date
         if self:
             self._compute_from_pre_order_ref()
             self._compute_profits()
             self._compute_stage_lines()
         return super().read(fields=fields, load=load)
+
+    def _get_selected_lines(self):
+        """Get BOM lines from the selected approval stage (Estimated)"""
+        if self.quotation_approval == 'stage1':
+            return self.stage1_line_ids
+        elif self.quotation_approval == 'stage2':
+            return self.stage2_line_ids
+        elif self.quotation_approval == 'stage3':
+            return self.stage3_line_ids
+        return self.env['sqa.stage1.line']
+
+    def _get_selected_grand_cost(self):
+        if self.quotation_approval == 'stage1':
+            return self.stage1_grand_cost
+        elif self.quotation_approval == 'stage2':
+            return self.stage2_grand_cost
+        elif self.quotation_approval == 'stage3':
+            return self.stage3_grand_cost
+        return 0.0
+
+    def _get_selected_grand_sales(self):
+        if self.quotation_approval == 'stage1':
+            return self.stage1_grand_sales
+        elif self.quotation_approval == 'stage2':
+            return self.stage2_grand_sales
+        elif self.quotation_approval == 'stage3':
+            return self.stage3_grand_sales
+        return 0.0
 
     # ── Approve ──────────────────────────────────────────────────────────────
     def action_approve(self):
@@ -222,7 +264,6 @@ class SqaFinalStage(models.Model):
         for line in approved_lines:
             if not line.product_qty:
                 continue
-            # Prevent division by zero
             unit_price = line.total_sales / line.product_qty if line.product_qty else 0.0
             product = line.bom_id.product_id or line.bom_id.product_tmpl_id.product_variant_ids[:1]
             if not product:
@@ -249,3 +290,126 @@ class SqaFinalStage(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
+
+
+class SqaFinalStageActualLine(models.Model):
+    _name = 'sqa.finalstage.actual.line'
+    _description = 'Final Stage Actual BOM Line'
+
+    finalstage_id = fields.Many2one('sqa.finalstage', ondelete='cascade', required=True)
+    bom_id = fields.Many2one('mrp.bom', string='BOM / Product', required=True)
+    product_qty = fields.Float(string='Quantity', default=1.0)
+    total_cost = fields.Float(compute='_compute_totals', store=True, string='Total Cost Price')
+    total_sales = fields.Float(compute='_compute_totals', store=True, string='Total Sales Price')
+    sqa_actual_bom_id = fields.Many2one('sqa.finalstage.actual.bom', ondelete='cascade')
+
+    @api.depends(
+        'sqa_actual_bom_id.bom_line_ids.product_qty',
+        'sqa_actual_bom_id.bom_line_ids.cost_price',
+        'sqa_actual_bom_id.bom_line_ids.sales_price',
+    )
+    def _compute_totals(self):
+        for rec in self:
+            lines = rec.sqa_actual_bom_id.bom_line_ids if rec.sqa_actual_bom_id else []
+            rec.total_cost = sum(l.product_qty * l.cost_price for l in lines)
+            rec.total_sales = sum(l.product_qty * l.sales_price for l in lines)
+
+    @api.onchange('bom_id')
+    def _onchange_bom_id(self):
+        if not self.bom_id or self.sqa_actual_bom_id:
+            return
+        self.product_qty = self.bom_id.product_qty
+        bom_line_vals = [(0, 0, {
+            'product_id': bl.product_id.id,
+            'product_qty': bl.product_qty,
+            'cost_price': bl.product_id.standard_price,
+            'sales_price': bl.product_id.list_price,
+        }) for bl in self.bom_id.bom_line_ids]
+        self.sqa_actual_bom_id = self.env['sqa.finalstage.actual.bom'].new({
+            'bom_id': self.bom_id.id,
+            'product_qty': self.product_qty,
+            'bom_line_ids': bom_line_vals,
+        })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for rec in records:
+            if rec.bom_id and not rec.sqa_actual_bom_id:
+                bom_line_vals = [(0, 0, {
+                    'product_id': bl.product_id.id,
+                    'product_qty': bl.product_qty,
+                    'cost_price': bl.product_id.standard_price,
+                    'sales_price': bl.product_id.list_price,
+                }) for bl in rec.bom_id.bom_line_ids]
+                bom_rec = self.env['sqa.finalstage.actual.bom'].create({
+                    'bom_id': rec.bom_id.id,
+                    'product_qty': rec.product_qty,
+                    'actual_line_id': rec.id,
+                    'bom_line_ids': bom_line_vals,
+                })
+                rec.sqa_actual_bom_id = bom_rec.id
+        return records
+
+    def action_open_bom_wizard(self):
+        self.ensure_one()
+        if not self.sqa_actual_bom_id or not self.sqa_actual_bom_id.id:
+            bom_line_vals = [(0, 0, {
+                'product_id': bl.product_id.id,
+                'product_qty': bl.product_qty,
+                'cost_price': bl.product_id.standard_price,
+                'sales_price': bl.product_id.list_price,
+            }) for bl in self.bom_id.bom_line_ids]
+            bom_rec = self.env['sqa.finalstage.actual.bom'].create({
+                'bom_id': self.bom_id.id,
+                'product_qty': self.product_qty,
+                'actual_line_id': self.id,
+                'bom_line_ids': bom_line_vals,
+            })
+            self.sqa_actual_bom_id = bom_rec.id
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Actual BOM Detail — %s') % self.bom_id.display_name,
+            'res_model': 'sqa.finalstage.actual.bom',
+            'res_id': self.sqa_actual_bom_id.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
+
+class SqaFinalStageActualBom(models.Model):
+    _name = 'sqa.finalstage.actual.bom'
+    _description = 'Final Stage Actual BOM Detail'
+
+    actual_line_id = fields.Many2one('sqa.finalstage.actual.line', ondelete='cascade')
+    bom_id = fields.Many2one('mrp.bom', string='BOM / Product', required=True, readonly=True)
+    product_qty = fields.Float(string='Quantity', default=1.0)
+    bom_line_ids = fields.One2many('sqa.finalstage.actual.bom.line', 'actual_bom_id', string='Component Lines')
+    total_cost = fields.Float(compute='_compute_totals', store=True, string='Total Cost Price')
+    total_sales = fields.Float(compute='_compute_totals', store=True, string='Total Sales Price')
+
+    @api.depends('bom_line_ids.product_qty', 'bom_line_ids.cost_price', 'bom_line_ids.sales_price')
+    def _compute_totals(self):
+        for rec in self:
+            rec.total_cost = sum(l.product_qty * l.cost_price for l in rec.bom_line_ids)
+            rec.total_sales = sum(l.product_qty * l.sales_price for l in rec.bom_line_ids)
+
+    def action_save_and_close(self):
+        return {'type': 'ir.actions.act_window_close'}
+
+
+class SqaFinalStageActualBomLine(models.Model):
+    _name = 'sqa.finalstage.actual.bom.line'
+    _description = 'Final Stage Actual BOM Component Line'
+
+    actual_bom_id = fields.Many2one('sqa.finalstage.actual.bom', required=True, ondelete='cascade')
+    product_id = fields.Many2one('product.product', string='Component', required=True)
+    product_qty = fields.Float(string='Quantity', default=1.0)
+    cost_price = fields.Float(string='Cost Price')
+    sales_price = fields.Float(string='Sales Price')
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.cost_price = self.product_id.standard_price
+            self.sales_price = self.product_id.list_price
